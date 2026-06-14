@@ -1,0 +1,30 @@
+name: Unzip Web Page
+
+on:
+  push:
+    paths:
+      - '**.zip'  # Se ejecuta cuando subes un .zip
+  workflow_dispatch: # Para correrlo manual también
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Necesario para hacer commit
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        
+      - name: Unzip file
+        run: |
+          unzip -o assets.zip -d ./ 
+          rm assets.zip
+          
+      - name: Commit descomprimidos
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git commit -m "Auto: descomprimir assets.zip" || echo "No hay cambios"
+          git push
